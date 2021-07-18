@@ -15,7 +15,7 @@ from model.Response import Response
 class CLI:
 
     def __init__(self):
-        self._command_handler = CommandHandler("admin")
+        self._command_handler = CommandHandler("ali")
         self._CLIWide = Constant.MENU_SIZE.value
         self._request = Request()
         self._response = Response()
@@ -28,7 +28,6 @@ class CLI:
                 self._response = self._command_handler.receive(self._request)
             else:
                 self._response = self._prev_response
-
             self._response_handler(self._response)
 
     def _response_handler(self, response):
@@ -88,9 +87,9 @@ class CLI:
         print("\t Project Name:" + value[0])
         print("\t Project Description:" + value[1])
         for i in value[2]:
-            print("\t\t Task Name: " + i.name)
-            print("\t\t\t Task Description: "+i.description)
-            print("\t\t\t Task Date: " + i.date)
+            print("\t\t Task Name: " + i[0])
+            print("\t\t\t Task Description: "+i[1])
+            print("\t\t\t Task Date: " + i[2])
         request = Request()
         request.type = RequestType.INPUT
         request.input_value = CommandEnum.MY_PROJECT.value

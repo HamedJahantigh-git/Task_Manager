@@ -1,3 +1,4 @@
+from Exeption.Error import ProjectNameRepititive
 from model.Project import Project
 
 
@@ -10,6 +11,10 @@ class NewProjectHandler:
         self.processor = processor
 
     def new_project(self, value):
-        project = Project(value[0], value[1], [])
-        self.processor.user.projectsList.append(project)
+        try:
+            project = Project(value[0], value[1])
+            print(project.name+"/"+project.description)
+            self.processor.db.save_new_project(project)
+        except Exception as e:
+            raise ProjectNameRepititive
         return self.processor.start()

@@ -19,7 +19,6 @@ class CommandHandler:
     def receive(self, request):
         self._request = request
         self._response = self._request_detector()
-        self._processor.file_manager.saveUser(self._processor.user)
 
         return self._response
 
@@ -31,10 +30,10 @@ class CommandHandler:
         }
 
         # return switcher[self._request.type](self._processor.state.type, self._request.input_value)
-        try:
-            return switcher[self._request.type](self._processor.state.type, self._request.input_value)
-        except Exception as exception:
-            return self._message_handler.handle(exception)
+        return switcher[self._request.type](self._processor.state.type, self._request.input_value)
+        # try:
+        # except Exception as exception:
+        #     return self._message_handler.handle(exception)
 
     def _input_state_detector(self, type, value):
         switcher = {

@@ -1,4 +1,4 @@
-from Exeption.Error import InvalidInput
+from Exeption.Error import InvalidInput, ProjectNameInvalid
 from controler.FileManager import FileManager
 from enums.CommandEnum import CommandEnum
 from enums.PrintListEnum import PrintListEnum
@@ -34,32 +34,45 @@ class ProjectHandler:
         response.print_list_type.append(PrintListEnum.HEADER)
         response.print_list_content.append(CommandEnum.PROJECT_LIST.value)
         response.print_list_type.append(PrintListEnum.MENU)
-        response.print_list_content.append(self.processor.user.projects_list_name())
+        project_list = self.processor.db.project_list_name()
+        print("project state to list")
+        print(project_list)
+        response.print_list_content.append(project_list)
         response.is_input = True
         response.is_list_input = False
         return response
 
     def project_list(self, value):
-        if value not in self.processor.user.projects_list_name():
+        project_list = self.processor.db.project_list_name()
+        if value not in project_list:
             raise InvalidInput
         self.processor.state.type = CommandEnum.PROJECT_ENTITY
         response = Response()
         response.print_list_type.append(PrintListEnum.HEADER)
         response.print_list_content.append(CommandEnum.PROJECT_ENTITY.value + ": " + value)
         response.print_list_type.append(PrintListEnum.MENU)
-        response.print_list_content.append(self.processor.user.projects_list_name())
+        project_list = self.processor.db.project_list_name()
+        response.print_list_content.append(project_list)
         response.is_input = False
         response.is_list_input = False
         return response
 
     def project_entity(self, value):
-        if value not in self.processor.user.projects_list_name():
+        project_entity = self.processor.db.project_entity(value)
+        if len(project_entity) == 0:
             raise InvalidInput
+        project_tasks_entity = self.processor.db.project_tasks_entity(value)
+        entity = [project_entity[0][1], project_entity[0][2]]
+        ans = []
+        for i in project_tasks_entity:
+            ans.append([i[2], i[3], i[4]])
+        entity.append(ans)
         self.processor.state.type = CommandEnum.MAIN_MENU
         response = Response()
         response.type = ResponseType.PROJECT_ENTITY
         response.print_list_type.append(PrintListEnum.PROJECT_ENTITY)
-        response.print_list_content = [self.processor.user.get_project(value).entity()]
+        response.print_list_content = [entity]
+        print(entity)
         response.is_input = False
         response.is_list_input = False
         return response
@@ -76,10 +89,12 @@ class ProjectHandler:
         return response
 
     def new_task(self, value):
-        if value[3] not in self.processor.user.projects_list_name():
-            raise InvalidInput
         task = Task(value[0], value[1], value[2])
-        self.processor.user.get_project(value[3]).tasks_list.append(task)
+        try:
+            self.processor.db.save_new_task(value[3], task)
+        except:
+            # todo
+            raise ProjectNameInvalid
         return self.processor.main_menu_handler.state_to_my_project()
 
     def _back(self):

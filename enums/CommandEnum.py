@@ -28,3 +28,5 @@ class CommandEnum(Enum):
     SUCCESSFUL = "Successful"
 
     PROJECT_ENTITY = "Project Entity"
+
+    ERROR = "Error"

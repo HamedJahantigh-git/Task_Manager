@@ -9,6 +9,9 @@ from model.User import User
 
 class FileManager:
 
+    def __init__(self):
+        pass
+
     def creatNeedFolder(self):
         try:
             os.makedirs(Path.USER.value)
@@ -16,14 +19,8 @@ class FileManager:
             pass
 
     def load_user(self, username):
-        try:
-            with open(Path.USER.value + "/" + username + ".json", 'r') as file:
-                data = file.read()
-            user = json.loads(data, object_hook=class_mapper)
-            return user
-        except:
-            user = User(username, [])
-            return user
+        user = """INSERT INTO "user"(username)
+                     VALUES(%s) RETURNING vendor_id;"""
 
     def saveUser(self, user):
         user_json_str = json.dumps(user, default=lambda o: o.__dict__, sort_keys=True, indent=4)

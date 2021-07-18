@@ -1,3 +1,4 @@
+from DataBase.DB import DB
 from controler.FileManager import FileManager
 from controler.MainMenuHandler import MainMenuHandler
 from controler.NewProjectHandler import NewProjectHandler
@@ -5,19 +6,17 @@ from controler.ProjectHandler import ProjectHandler
 from enums.CommandEnum import CommandEnum
 from enums.MessageEnum import MessageEnum
 from enums.PrintListEnum import PrintListEnum
-from enums.RequestType import RequestType
 from enums.ResponseType import ResponseType
 from model.Response import Response
 from model.State import State
-from model.User import User
 
 
 class Processor:
 
     def __init__(self, username):
-        self.file_manager = FileManager()
-        self.user = self.file_manager.load_user(username)
-        self.file_manager.saveUser(self.user)
+        self.db = DB()
+        self.db.initialize()
+        self.user = self.db.load_user(username)
         self.state = State()
         self.main_menu_handler = MainMenuHandler()
         self.new_project_handler = NewProjectHandler()
@@ -27,7 +26,6 @@ class Processor:
         self.main_menu_handler.set_processor(self)
         self.new_project_handler.set_processor(self)
         self.project_handler.set_processor(self)
-
 
     def start(self, *arg):
         self.state.type = CommandEnum.MAIN_MENU
@@ -45,4 +43,5 @@ class Processor:
         response.type = ResponseType.EXIT
         response.print_list_type.append(PrintListEnum.HEADER)
         response.print_list_content.append(MessageEnum.EXIT_MESSAGE.value)
+        self.db.exit()
         return response
